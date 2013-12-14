@@ -14,8 +14,11 @@ use Zend\View\Model\ViewModel;
 
 class VideoController extends AbstractActionController
 {
-    public function indexAction()
-    {
-        echo "test"
+    public function indexAction() {
+        echo "test";
+    }
+    
+    public function addAction() {
+      echo "test add "
     }
 }
