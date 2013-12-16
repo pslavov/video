@@ -7,11 +7,11 @@ use Zend\View\Model\ViewModel;
 
 class VideoController extends AbstractActionController {
     public function indexAction() {
-        echo "test";
+      return new ViewModel(array('msg'=> "test"));
     }
     
     public function addAction() {
-      echo "test add";
+      return new ViewModel(array('msg'=> "test add"));
     }
 }
 
