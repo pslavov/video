@@ -3,3 +3,10 @@ LICENSE.txt
 README.txt
 *~
 lib
+app/tmp/cache/*
+app/tmp/cache/models/*
+app/tmp/cache/tests/*
+app/tmp/cache/persistent/*
+app/tmp/logs/*
+app/tmp/sessions/*
+app/tmp/tests/*
