@@ -13,4 +13,14 @@ class Log extends AppModel {
  */
 	public $primaryKey = 'log_id';
 
+	public $belongsTo = array(
+		'User' => array(
+			'className' => 'User',
+			'foreignKey' => 'user_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		)
+	);
+
 }
