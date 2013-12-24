@@ -7,6 +7,8 @@
 		echo $this->Form->input('controler');
 		echo $this->Form->input('action');
 		echo $this->Form->input('description');
+		echo $this->Form->input('ip');
+		echo $this->Form->input('created_at');
 	?>
 	</fieldset>
 <?php echo $this->Form->end(__('Submit')); ?>

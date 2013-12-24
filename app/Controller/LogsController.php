@@ -55,6 +55,8 @@ class LogsController extends AppController {
 				$this->Session->setFlash(__('The log could not be saved. Please, try again.'));
 			}
 		}
+		$users = $this->Log->User->find('list');
+		$this->set(compact('users'));
 	}
 
 /**
@@ -79,6 +81,8 @@ class LogsController extends AppController {
 			$options = array('conditions' => array('Log.' . $this->Log->primaryKey => $id));
 			$this->request->data = $this->Log->find('first', $options);
 		}
+		$users = $this->Log->User->find('list');
+		$this->set(compact('users'));
 	}
 
 /**

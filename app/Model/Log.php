@@ -2,7 +2,8 @@
 App::uses('AppModel', 'Model');
 /**
  * Log Model
- *
+ * 
+ * @property User $User
  */
 class Log extends AppModel {
 

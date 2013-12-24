@@ -7,6 +7,8 @@
 			<th><?php echo $this->Paginator->sort('controler'); ?></th>
 			<th><?php echo $this->Paginator->sort('action'); ?></th>
 			<th><?php echo $this->Paginator->sort('description'); ?></th>
+			<th><?php echo $this->Paginator->sort('ip'); ?></th>
+			<th><?php echo $this->Paginator->sort('created_at'); ?></th>
 			<th class="actions"><?php echo __('Actions'); ?></th>
 	</tr>
 	<?php foreach ($logs as $log): ?>
@@ -16,6 +18,8 @@
 		<td><?php echo h($log['Log']['controler']); ?>&nbsp;</td>
 		<td><?php echo h($log['Log']['action']); ?>&nbsp;</td>
 		<td><?php echo h($log['Log']['description']); ?>&nbsp;</td>
+		<td><?php echo h($log['Log']['ip']); ?>&nbsp;</td>
+		<td><?php echo h($log['Log']['created_at']); ?>&nbsp;</td>
 		<td class="actions">
 			<?php echo $this->Html->link(__('View'), array('action' => 'view', $log['Log']['log_id'])); ?>
 			<?php echo $this->Html->link(__('Edit'), array('action' => 'edit', $log['Log']['log_id'])); ?>

@@ -100,4 +100,27 @@ class UsersController extends AppController {
 			$this->Session->setFlash(__('The user could not be deleted. Please, try again.'));
 		}
 		return $this->redirect(array('action' => 'index'));
-	}}
+	}
+  public function beforeFilter() {
+      parent::beforeFilter();
+      // Allow users to register and logout.
+      $this->Auth->allow('add', 'logout');
+  }
+  
+  public function login() {
+      if ($this->request->is('post')) {
+          $uname = $this->request->data['User']['username'];
+          $udata = $this->User->find('first', array('conditions' => array('username' => $uname) ) )['User'];
+          if ($this->Auth->login($udata)) {
+              return $this->redirect($this->Auth->redirect());
+          }
+          $this->Session->setFlash(__('Invalid username, try again'));
+      }
+  }
+  
+  public function logout() {
+      return $this->redirect($this->Auth->logout());
+  }
+  
+  }
+

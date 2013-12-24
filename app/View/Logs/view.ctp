@@ -26,6 +26,16 @@
 			<?php echo h($log['Log']['description']); ?>
 			&nbsp;
 		</dd>
+		<dt><?php echo __('Ip'); ?></dt>
+		<dd>
+			<?php echo h($log['Log']['ip']); ?>
+			&nbsp;
+		</dd>
+		<dt><?php echo __('Created_at'); ?></dt>
+		<dd>
+			<?php echo h($log['Log']['created_at']); ?>
+			&nbsp;
+		</dd>
 	</dl>
 </div>
 <div class="actions">
