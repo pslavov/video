@@ -1,0 +1,9 @@
+<?php 
+
+  GGClientId = "xxxxxxxxxxxxxxxxxx";
+  GGEmailAddress = "xxxxxxxxxxxxxxx";
+  GGClientSecret = "xxxxxxxxxxxxxxxxx";
+  GGRedirectURIs = "http://xxxxxxxxxxxxxxx/oauth";
+  GGJavascriptOrigins = "http://xxxxxxxxxxxxx";
+
+?>

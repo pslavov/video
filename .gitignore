@@ -10,3 +10,5 @@ app/tmp/cache/persistent/*
 app/tmp/logs/*
 app/tmp/sessions/*
 app/tmp/tests/*
+app/Config/database.php
+.oauth_config.php
