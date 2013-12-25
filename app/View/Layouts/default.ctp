@@ -39,7 +39,14 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 <body>
 	<div id="container">
 		<div id="header">
-			<h1><?php echo $this->Html->link($cakeDescription, 'http://cakephp.org'); ?></h1>
+			<h1>
+        <a title="Video index" href="http://v.peshka.org">Video index</a>
+        <?php if (@!is_null($user)) { ?>
+          <span><a href="/users/logout" title="logout"><?php echo  $user['name']; ?></a></span>
+        <?php } else { ?>
+          <span><a href="/users/login" title="login">Login</a></span>
+        <?php }  ?>
+      </h1>
 		</div>
 		<div id="content">
 

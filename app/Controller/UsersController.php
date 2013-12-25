@@ -102,9 +102,13 @@ class UsersController extends AppController {
 		return $this->redirect(array('action' => 'index'));
 	}
   public function beforeFilter() {
-      parent::beforeFilter();
-      // Allow users to register and logout.
-      $this->Auth->allow('add', 'logout');
+    parent::beforeFilter();
+    // Allow users to register and logout.
+    $this->Auth->allow('logout');
+    if ($this->Auth->user('user_id')) {
+      $this->Auth->allow('*');
+      $this->set('user', $this->Auth->user());
+    }
   }
   
   public function login() {
@@ -121,6 +125,6 @@ class UsersController extends AppController {
   public function logout() {
       return $this->redirect($this->Auth->logout());
   }
-  
-  }
+
+}
 

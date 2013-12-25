@@ -34,19 +34,19 @@ class AppController extends Controller {
         'Session',
         'Auth' => array(
             'loginRedirect' => array(
-                'controller' => 'pages',
-                'action' => 'home'
-            ),
-            'logoutRedirect' => array(
-                'controller' => 'users',
-                'action' => 'login',
+                'controller' => 'video',
+                'action' => 'index'
             ),
             'authorize' => array('Controller'),
         )
     );
 
     public function beforeFilter() {
-        $this->Auth->allow('index', 'view');
+        $this->Auth->allow('login');
+        if ($this->Auth->user('user_id')) {
+          $this->Auth->allow('*');
+          $this->set('user', $this->Auth->user());
+        }
     }
     
     public function isAuthorized($user) {
