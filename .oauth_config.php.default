@@ -1,9 +1,9 @@
 <?php 
 
-  GGClientId = "xxxxxxxxxxxxxxxxxx";
-  GGEmailAddress = "xxxxxxxxxxxxxxx";
-  GGClientSecret = "xxxxxxxxxxxxxxxxx";
-  GGRedirectURIs = "http://xxxxxxxxxxxxxxx/oauth";
-  GGJavascriptOrigins = "http://xxxxxxxxxxxxx";
+  define("GGClientId", "xxxxxxxxxxxxxxxxxxxxx");
+  define("GGEmailAddress", "xxxxxxxxxxxxxxxxx");
+  define("GGClientSecret", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+  define("GGRedirectURIs", "xxxxxxxxxxxxxxxxxxxx/users/oauth_callback");
+  define("GGJavascriptOrigins", "xxxxxxxxxxxxxxxxxx");
 
 ?>

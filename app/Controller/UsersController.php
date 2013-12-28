@@ -104,7 +104,7 @@ class UsersController extends AppController {
   public function beforeFilter() {
     parent::beforeFilter();
     // Allow users to register and logout.
-    $this->Auth->allow('logout');
+    $this->Auth->allow('logout', 'oauth', 'oauth_callback');
     if ($this->Auth->user('user_id')) {
       $this->Auth->allow('*');
       $this->set('user', $this->Auth->user());
@@ -112,18 +112,94 @@ class UsersController extends AppController {
   }
   
   public function login() {
-      if ($this->request->is('post')) {
-          $uname = $this->request->data['User']['username'];
-          $udata = $this->User->find('first', array('conditions' => array('username' => $uname) ) )['User'];
-          if ($this->Auth->login($udata)) {
-              return $this->redirect($this->Auth->redirect());
-          }
-          $this->Session->setFlash(__('Invalid username, try again'));
-      }
+    
+    if (is_array($this->Auth->user())) {
+      header('Location: /video');
+      exit;
+    }
+
   }
   
   public function logout() {
       return $this->redirect($this->Auth->logout());
+  }
+  
+  public function oauth() {
+    require_once "../../.oauth_config.php";
+    
+    $url_params = http_build_query(
+                                    array(
+                                          'client_id'   => GGClientId, 
+                                          'response_type' => 'code',
+                                          'redirect_uri' => GGRedirectURIs,
+                                          'scope' => 'openid email',
+                                        )
+                                  );
+    //~ debug($url_params);exit;
+    header('Location: https://accounts.google.com/o/oauth2/auth?'.$url_params);
+    exit;
+  }
+  
+  public function oauth_callback() {
+    require_once "../../.oauth_config.php";
+    require_once "../../lib/extra/JWT.php";
+    
+    $code_is = $this->request->query['code'];
+    
+    $cr = curl_init();
+    curl_setopt_array($cr, array(
+        CURLOPT_RETURNTRANSFER => 1,
+        CURLOPT_URL => 'https://accounts.google.com/o/oauth2/token',
+        CURLOPT_POST => 1,
+        CURLOPT_POSTFIELDS => array(
+            'code' =>   $code_is,
+            'client_id' => GGClientId,
+            'client_secret' => GGClientSecret,
+            'redirect_uri' => GGRedirectURIs,
+            'grant_type' => 'authorization_code',
+        )
+    ));
+    $res = curl_exec($cr);
+    curl_close($cr);
+        
+    $token_obj = json_decode($res);
+    $user_data = JWT::decode($token_obj->id_token, NULL, false);
+    
+    $udata = $this->User->find('first', 
+                                  array(
+                                    'conditions' => array('o.oauth_mail' => $user_data->email),
+                                    'joins' => array(
+                                                  array(
+                                                    'alias' => 'o',
+                                                    'table' => 'oauth_links',
+                                                    'type' => 'LEFT',
+                                                    'conditions' => 'o.user_id = User.user_id'
+                                                  )
+                                                ) 
+                                  ) 
+                              );
+    
+    $log_data = array(
+                  
+                );
+    
+    if ($this->Auth->login($udata['User'])) {
+      $log_data = array(
+                    'user_id' => $udata['User']['user_id'],
+                    'controler' => 'users',
+                    'action' => 'google login',
+                    'description' => 'succesfull login from google - access_token: '.$token_obj->access_token,
+                    'ip' => $_SERVER['REMOTE_ADDR'],
+                  );
+      $log = new Log();
+      $log->create();
+      $log->save($log_data);
+      return $this->redirect($this->Auth->redirect());
+      
+    }
+    
+    exit;
+
   }
 
 }
