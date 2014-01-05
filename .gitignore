@@ -12,3 +12,4 @@ app/tmp/sessions/*
 app/tmp/tests/*
 app/Config/database.php
 .oauth_config.php
+app/webroot/jwplayer/*
