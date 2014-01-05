@@ -24,7 +24,25 @@ class VideoController extends AppController {
     
     $this->scanDir();
     
-    debug($this->Video->find('all'));
+    $i=1;
+    foreach ($this->Video->find('all') as $vid) {
+      $fname = $vid['Video']['dir'] .'/'. $vid['Video']['file'];
+      echo '<embed 
+              type="application/x-vlc-plugin" 
+              pluginspage="http://www.videolan.org"
+              version="VideoLAN.VLCPlugin.2"
+              target="'.$fname.'" 
+              width="800" 
+              height="600" 
+              autostart="no" 
+              controls="yes"
+              loop="no" 
+              hidden="no" 
+            /><br/>';
+      $i++;
+      if ($i > 3) break;
+    }
+    
     exit;
 	}
   
@@ -39,22 +57,26 @@ class VideoController extends AppController {
     $all_fl_info = array();
     foreach ($Iterator as $f) {
       if (preg_match($pattern, $f->getExtension())) {
-        
+        $full_path = $f->getPath() . '/' . $f->getFilename();
         $create_new = True;
         if (array_key_exists($f->getPath(), $existing_videos)) 
           if (in_array($f->getFilename(), $existing_videos[$f->getPath()])) 
             $create_new = False;
           
-        if ($create_new) {
-            $size = $f->getSize();
-            if ($size < 0) {
-              $size = $this->RealFileSize($f->getPathname()); 
-            }
+        if ($create_new) {          
+            $meta = $this->getMetaData($full_path);
+            
             $data = array('file' => $f->getFilename(),
                           'dir' => $f->getPath(),
                           'ext' => $f->getExtension(),
                           'mtime' => date("Y-m-d H:i:s", $f->getMTime()),
-                          'size' => $size,
+                          'size' => $meta['filesize'],
+                          'processed' => True,
+                          'mime' => $meta['mime'],
+                          'duration' => $meta['duration'],
+                          'width' => $meta['resolution_x'],
+                          'height' => $meta['resolution_y'],
+                          'mime' => $meta['mime'],
                     );
             $this->Video->create();
             $this->Video->save($data);
@@ -63,7 +85,20 @@ class VideoController extends AppController {
     }
   }
   
-  
+  public function getMetaData($file) {
+    require_once "../../lib/extra/getid3/getid3.php";
+    
+    $getID3 = new getID3;
+    $data = $getID3->analyze($file);
+
+    return array(
+              'mime' => $data['mime_type'],
+              'resolution_x' => $data['video']['resolution_x'],
+              'resolution_y' => $data['video']['resolution_y'],
+              'filesize' => $data['filesize'],
+              'duration' => $data['playtime_seconds'],
+            );
+  }
   
   public function glob_recursive($pattern, $flags = 0) {
     $files = glob($pattern, $flags);
