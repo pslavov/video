@@ -23,27 +23,55 @@ class VideoController extends AppController {
     //
     
     $this->scanDir();
+    $this->set('vids', $this->Video->find('all'));
     
-    $i=1;
-    foreach ($this->Video->find('all') as $vid) {
-      $fname = $vid['Video']['dir'] .'/'. $vid['Video']['file'];
-      echo '<embed 
-              type="application/x-vlc-plugin" 
-              pluginspage="http://www.videolan.org"
-              version="VideoLAN.VLCPlugin.2"
-              target="'.$fname.'" 
-              width="800" 
-              height="600" 
-              autostart="no" 
-              controls="yes"
-              loop="no" 
-              hidden="no" 
-            /><br/>';
-      $i++;
-      if ($i > 3) break;
-    }
-    
-    exit;
+    //~ exit;
+    //~ 
+    //~ echo '<script type="text/javascript" src="/jwplayer/jwplayer.js"></script>';
+    //~ 
+    //~ $i=1;
+    //~ foreach ($this->Video->find('all') as $vid) {
+      //~ $fname = $vid['Video']['dir'] .'/'. $vid['Video']['file'];
+      //~ echo $this->Html->link(
+                            //~ $vid['Video']['file'],
+                            //~ array(
+                                //~ 'controller' => 'video',
+                                //~ 'action' => 'get',
+                                //~ $vid['Video']['video_id']
+                            //~ )
+                        //~ );
+      //~ 
+      //~ if ( !in_array($vid['Video']['ext'], array('avi', 'mkv')) ) {
+        //~ echo '<div id="video'.$vid['Video']['video_id'].'">Loading the player...</div>
+  //~ 
+              //~ <script type="text/javascript">
+                  //~ jwplayer("video'.$vid['Video']['video_id'].'").setup({
+                      //~ file: "'.$fname.'",
+                      //~ width: "800",
+                      //~ height: "600",
+                      //~ displaytitle: "'.$vid['Video']['file'].'",
+                      //~ title: "'.$vid['Video']['file'].'",
+                  //~ });
+              //~ </script>';
+      //~ } else {
+        //~ echo '<embed 
+                //~ type="application/x-vlc-plugin" 
+                //~ pluginspage="http://www.videolan.org"
+                //~ version="VideoLAN.VLCPlugin.2"
+                //~ target="'.$fname.'" 
+                //~ width="800" 
+                //~ height="600" 
+                //~ autostart="no" 
+                //~ controls="yes"
+                //~ loop="no" 
+                //~ hidden="no" 
+              //~ /><br/>';
+      //~ }
+      //~ $i++;
+      //~ if ($i > 3) break;
+    //~ }
+    //~ 
+    //~ exit;
 	}
   
   private function scanDir() {
@@ -80,7 +108,11 @@ class VideoController extends AppController {
                     );
             $this->Video->create();
             $this->Video->save($data);
-        } 
+        } else {
+          if (!file_exists($full_path)) {
+            //delete db record
+          }
+        }
       }
     }
   }
@@ -110,7 +142,7 @@ class VideoController extends AppController {
   
   public function beforeFilter() {
     if ($this->Auth->user('user_id')) {
-      $this->Auth->allow('index');
+      $this->Auth->allow('index', 'get');
       $this->set('user', $this->Auth->user());
     }
   }
@@ -143,4 +175,34 @@ class VideoController extends AppController {
       return $pos;
   }
 
+  private function flush_buffers() {
+    ob_end_flush();
+    ob_flush();
+    flush();
+    ob_start();
+  }
+ 
+  public function get($id = null) {
+    
+    debug($id);
+    debug($this->request->params);
+    exit;
+    
+    
+    $video = $this->find('first', array('fields' => array('file', 'dir', 'ext', 'mime')))['Video'];
+    
+    
+    $filename = $video['dir'].'/'.$video['file'];
+    if (is_file($filename)) {
+        header('Content-Type: '.$video['mime']);
+        header("Content-Disposition: attachment; filename=".$filename);
+        $fd = fopen($filename, "r");
+        while(!feof($fd)) {
+            echo fread($fd, 1024 * 5);
+              $this->flush_buffers();
+            }
+        fclose ($fd);
+        exit();
+    }
+  }
 }
