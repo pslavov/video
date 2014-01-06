@@ -8,9 +8,9 @@ App::uses('File', 'Utility');
  * @property Log $Log
  * @property PaginatorComponent $Paginator
  */
-class VideoController extends AppController {
+class VideosController extends AppController {
 
-  public $uses = array('Video');
+  //~ public $uses = array('Video');
 	public $components = array('Paginator');
   private $video_dir = "/disk2/data";
 
@@ -19,11 +19,22 @@ class VideoController extends AppController {
  *
  * @return void
  */
-	public function index() {
+	public function index($dir = '') {
     //
     
     $this->scanDir();
-    $this->set('vids', $this->Video->find('all'));
+    $this->Video->video_dir = $this->video_dir;
+    $videos = $this->Video->getList();
+    if (empty($dir)) {
+      $tmp_v = current($videos);
+      $dir = $tmp_v['video_dir'];
+    } else {
+      $dir = urldecode($dir);
+    }
+    
+    $this->set('vids', $videos);
+    $this->set('dir', $dir);
+    
     
     //~ exit;
     //~ 
@@ -183,19 +194,13 @@ class VideoController extends AppController {
   }
  
   public function get($id = null) {
-    
-    debug($id);
-    debug($this->request->params);
-    exit;
-    
-    
-    $video = $this->find('first', array('fields' => array('file', 'dir', 'ext', 'mime')))['Video'];
+    $video = $this->Video->find('first', array('fields' => array('file', 'dir', 'ext', 'mime'), 'conditions' => array($this->Video->primaryKey => $id)))['Video'];
     
     
     $filename = $video['dir'].'/'.$video['file'];
     if (is_file($filename)) {
         header('Content-Type: '.$video['mime']);
-        header("Content-Disposition: attachment; filename=".$filename);
+        header("Content-Disposition: attachment; filename=".$video['file']);
         $fd = fopen($filename, "r");
         while(!feof($fd)) {
             echo fread($fd, 1024 * 5);

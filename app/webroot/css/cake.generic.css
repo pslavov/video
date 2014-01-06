@@ -744,3 +744,43 @@ pre {
 #url-rewriting-warning {
 	display:none;
 }
+
+.videoList {
+  display: block;
+  overflow: hidden;
+  min-width: 1008px;
+  width: 100%
+}
+
+.videoList .leftMenu {
+  float: left;
+  min-width: 278px;
+  width: 20%;
+  padding-right: 5px;
+}
+
+.videoList .middle {
+  float: left;
+  min-width: 718px;
+  width: 69%;
+  padding-right: 0;
+}
+
+.videoList .leftMenu .videoDirs {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;
+}
+.videoList .leftMenu .videoDirs li {
+  font-size: 11px;
+  padding-left: 1px; 
+}
+
+.videoList .leftMenu .videoDirs li.current {
+  color: #3C81F0;
+  font-weight: bold;
+}
+
+.videoList .leftMenu .videoDirs li.current a {
+  color: #3C81F0;
+}

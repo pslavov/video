@@ -33,10 +33,6 @@ class AppController extends Controller {
    public $components = array(
         'Session',
         'Auth' => array(
-            'loginRedirect' => array(
-                'controller' => 'video',
-                'action' => 'index'
-            ),
             'authorize' => array('Controller'),
         )
     );
