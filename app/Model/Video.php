@@ -15,13 +15,13 @@ class Video extends AppModel {
 
   public function getAllFilenames() {
     $ret = array();
-    $existing_videos = $this->find('all', array('fields' => array('file', 'dir')));
+    $existing_videos = $this->find('all', array('fields' => array('video_id','file', 'dir')));
     
     foreach ($existing_videos as $v) {
       if (!array_key_exists($v['Video']['dir'], $ret)) {
         $ret[$v['Video']['dir']] = array();
       }
-      $ret[$v['Video']['dir']][] = $v['Video']['file'];
+      $ret[$v['Video']['dir']][$v['Video']['video_id']] = $v['Video']['file'];
     }
     
     return $ret;
@@ -47,9 +47,9 @@ class Video extends AppModel {
       }
       $data = $v['Video'];
       $data['mtime'] = strtotime($data['mtime']);
-      $vid_array[$v['Video']['dir']][] = $data;
+      $vid_array[$v['Video']['dir']][$v['Video']['video_id']] = $data;
     }
-    
+
     $vid_arr2 = array();
     $vid_arr2['Single'] = array();
     foreach ($vid_array AS $k => $v) {
@@ -83,6 +83,7 @@ class Video extends AppModel {
       $ret[$k]['count'] = count($files);
       $ret[$k]['video_dir'] = $tmp_dir;
     }
+    
     
     uasort($ret, array($this, 'video_compare'));
     return $ret;

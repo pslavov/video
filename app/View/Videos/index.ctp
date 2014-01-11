@@ -21,14 +21,16 @@
       }
     ?>
     </ul>
+    <span class="debug"></span>
   </div>
   <div class="middle">
     <?php 
       if (count($vids[$dir_key]) > 0) {
         foreach($vids[$dir_key] AS $k => $v) {
-          if (in_array($k, array('video_dir', 'mtime', 'count')))
-            continue;
-            
+	  if ($k and in_array($k, array('video_dir', 'mtime', 'count'))) {
+		continue;
+	  }
+
           $link = $this->Html->link(
                                 $v['file'],
                                 array('controller' => 'videos',
@@ -36,8 +38,25 @@
                                       $v['video_id']
                                 )
                               );
-          echo $link;
-          echo "<br />";
+          $v_url = 'http://'.$luser.':'.$lpwd.'@home.peshka.org/t'.preg_replace('#^'.$video_dir.'#', '', $v['dir']).'/'.urlencode($v['file']);
+          //echo $link;
+          //echo "<br />"; ?>
+          <div class="oneVideo oneVideo<?= $v['video_id']?>">
+            <div class="VideoButons">
+              <span class="showButton showButton<?= $v['video_id']?>" onClick="showVideo(<?= $v['video_id']?>);">Show</span>
+              <span class="hideButton hideButton<?= $v['video_id']?>" onClick="hideVideo(<?= $v['video_id']?>);">Hide</span>
+              <span class="title"><a href="<?= $v_url?>"><?= $v['file']?> (<?= $v['mime']?>)</a></span>
+            </div>
+            <div class="videoContent videoContent<?= $v['video_id']?>">
+              <span class="writeVideo writeVLC" onClick="writeVLC(<?= $v['video_id']?>, '<?= $v['ext']?>')">VLC Plugin</span>
+              <span class="writeVideo writeJW" onClick="writeJW(<?= $v['video_id']?>, '<?= $v['file']?>', '<?= $v['ext']?>')">JW player</span>
+              <span class="writeVideo writeHTML5" onClick="writeHTML5(<?= $v['video_id']?>, '<?= $v['mime']?>', '<?= $v['ext']?>')" >HTML5</span>
+              <div class="playerContent playerContent<?= $v['video_id']?>">
+                1
+              </div>
+            </div>
+          </div>
+    <?php
         }
       }
     ?>

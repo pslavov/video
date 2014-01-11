@@ -13,3 +13,4 @@ app/tmp/tests/*
 app/Config/database.php
 .oauth_config.php
 app/webroot/jwplayer/*
+.local_user.php

@@ -111,7 +111,9 @@ class UsersController extends AppController {
     }
   }
   
-  public function login() {
+  public function login($msg = '') {
+    
+    $this->set('msg', $msg);
     
     if (is_array($this->Auth->user())) {
       header('Location: /video');
@@ -183,24 +185,37 @@ class UsersController extends AppController {
                   
                 );
     
-    if ($this->Auth->login($udata['User'])) {
-      $log_data = array(
-                    'user_id' => $udata['User']['user_id'],
-                    'controler' => 'users',
-                    'action' => 'google login',
-                    'description' => 'succesfull login from google - access_token: '.$token_obj->access_token,
-                    'ip' => $_SERVER['REMOTE_ADDR'],
-                  );
-      $log = new Log();
-      $log->create();
-      $log->save($log_data);
-      return $this->redirect($this->Auth->redirect());
-      
+    if (!empty($udata)) {
+      if ($this->Auth->login($udata['User'])) {
+        $log_data = array(
+                      'user_id' => (int)$udata['User']['user_id'],
+                      'controler' => 'users',
+                      'action' => 'google login',
+                      'description' => 'succesfull login from google - access_token: '. $user_data->email,
+                      'ip' => $_SERVER['REMOTE_ADDR'],
+                    );
+        $log = new Log();
+        $log->create();
+        $log->save($log_data);
+        return $this->redirect($this->Auth->redirect());
+        exit;
+      }
     }
     
+    $log_data = array(
+                  'user_id' => 0,
+                  'controler' => 'users',
+                  'action' => 'google login',
+                  'description' => 'Wrong google login : '.$user_data->email,
+                  'ip' => $_SERVER['REMOTE_ADDR'],
+                );    
+    $log = new Log();
+    $log->create();
+    $log->save($log_data);
+    $this->redirect(
+      array('controller' => 'users', 'action' => 'login', 'Cannot login - try again!')
+    );
     exit;
-
   }
-
 }
 

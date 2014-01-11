@@ -10,7 +10,7 @@ App::uses('File', 'Utility');
  */
 class VideosController extends AppController {
 
-  //~ public $uses = array('Video');
+  public $uses = array('Log', 'Video');
 	public $components = array('Paginator');
   private $video_dir = "/disk2/data";
 
@@ -21,6 +21,7 @@ class VideosController extends AppController {
  */
 	public function index($dir = '') {
     //
+    require_once '../../.local_user.php';
     
     $this->scanDir();
     $this->Video->video_dir = $this->video_dir;
@@ -34,56 +35,10 @@ class VideosController extends AppController {
     
     $this->set('vids', $videos);
     $this->set('dir', $dir);
-    
-    
-    //~ exit;
-    //~ 
-    //~ echo '<script type="text/javascript" src="/jwplayer/jwplayer.js"></script>';
-    //~ 
-    //~ $i=1;
-    //~ foreach ($this->Video->find('all') as $vid) {
-      //~ $fname = $vid['Video']['dir'] .'/'. $vid['Video']['file'];
-      //~ echo $this->Html->link(
-                            //~ $vid['Video']['file'],
-                            //~ array(
-                                //~ 'controller' => 'video',
-                                //~ 'action' => 'get',
-                                //~ $vid['Video']['video_id']
-                            //~ )
-                        //~ );
-      //~ 
-      //~ if ( !in_array($vid['Video']['ext'], array('avi', 'mkv')) ) {
-        //~ echo '<div id="video'.$vid['Video']['video_id'].'">Loading the player...</div>
-  //~ 
-              //~ <script type="text/javascript">
-                  //~ jwplayer("video'.$vid['Video']['video_id'].'").setup({
-                      //~ file: "'.$fname.'",
-                      //~ width: "800",
-                      //~ height: "600",
-                      //~ displaytitle: "'.$vid['Video']['file'].'",
-                      //~ title: "'.$vid['Video']['file'].'",
-                  //~ });
-              //~ </script>';
-      //~ } else {
-        //~ echo '<embed 
-                //~ type="application/x-vlc-plugin" 
-                //~ pluginspage="http://www.videolan.org"
-                //~ version="VideoLAN.VLCPlugin.2"
-                //~ target="'.$fname.'" 
-                //~ width="800" 
-                //~ height="600" 
-                //~ autostart="no" 
-                //~ controls="yes"
-                //~ loop="no" 
-                //~ hidden="no" 
-              //~ /><br/>';
-      //~ }
-      //~ $i++;
-      //~ if ($i > 3) break;
-    //~ }
-    //~ 
-    //~ exit;
-	}
+    $this->set('luser', luser);
+    $this->set('lpwd', lpwd);
+    $this->set('video_dir', $this->video_dir);
+  }
   
   private function scanDir() {
     
@@ -92,17 +47,22 @@ class VideosController extends AppController {
     
     $existing_videos = $this->Video->getAllFilenames();
     
+    
+    
     $pattern = '/^(avi|mkv|mp4|flv|mpg|mpeg|mov)$/i';
     $all_fl_info = array();
     foreach ($Iterator as $f) {
       if (preg_match($pattern, $f->getExtension())) {
         $full_path = $f->getPath() . '/' . $f->getFilename();
         $create_new = True;
-        if (array_key_exists($f->getPath(), $existing_videos)) 
-          if (in_array($f->getFilename(), $existing_videos[$f->getPath()])) 
+        if (array_key_exists($f->getPath(), $existing_videos)) {
+          if (in_array($f->getFilename(), $existing_videos[$f->getPath()])) {
             $create_new = False;
+          } 
+        }
           
-        if ($create_new) {          
+        if ($create_new) {      
+            
             $meta = $this->getMetaData($full_path);
             
             $data = array('file' => $f->getFilename(),
@@ -119,9 +79,43 @@ class VideosController extends AppController {
                     );
             $this->Video->create();
             $this->Video->save($data);
-        } else {
+            
+            $log_data = array(
+                  'user_id' => (int)$this->Auth->user('user_id'),
+                  'controler' => 'videos',
+                  'action' => 'add new',
+                  'description' => 'Added new video: '.$full_path,
+                  'ip' => $_SERVER['REMOTE_ADDR'],
+                );    
+            $this->Log->create();
+            $this->Log->save($log_data);
+          
+        } 
+      }
+    }
+    
+    //~ debug($i);
+    
+    unset($Iterator);
+    
+    foreach ($existing_videos AS $d => $vfiles) {
+      if (is_array($vfiles)) {
+        foreach ($vfiles AS $id => $f) {
+          $full_path = $d .'/'.$f;
           if (!file_exists($full_path)) {
-            //delete db record
+            
+            if ($del = $this->Video->delete($id)) {
+            
+              $log_data = array(
+                    'user_id' => (int)$this->Auth->user('user_id'),
+                    'controler' => 'videos',
+                    'action' => 'add new',
+                    'description' => 'Removed old video: '.$full_path,
+                    'ip' => $_SERVER['REMOTE_ADDR'],
+                  );    
+              $this->Log->create();
+              $this->Log->save($log_data);
+            } 
           }
         }
       }
@@ -158,34 +152,6 @@ class VideosController extends AppController {
     }
   }
 
-  private function RealFileSize($fpath) {
-      $fp = fopen($fpath, 'r');
-      $pos = 0;
-      $size = 1073741824;
-      fseek($fp, 0, SEEK_SET);
-      while ($size > 1)
-      {
-          fseek($fp, $size, SEEK_CUR);
-  
-          if (fgetc($fp) === false)
-          {
-              fseek($fp, -$size, SEEK_CUR);
-              $size = (int)($size / 2);
-          }
-          else
-          {
-              fseek($fp, -1, SEEK_CUR);
-              $pos += $size;
-          }
-      }
-  
-      while (fgetc($fp) !== false)  $pos++;
-      
-      fclose($fp);
-      
-      return $pos;
-  }
-
   private function flush_buffers() {
     ob_end_flush();
     ob_flush();
@@ -194,19 +160,29 @@ class VideosController extends AppController {
   }
  
   public function get($id = null) {
-    $video = $this->Video->find('first', array('fields' => array('file', 'dir', 'ext', 'mime'), 'conditions' => array($this->Video->primaryKey => $id)))['Video'];
+    $video = $this->Video->find('first', array('fields' => array('file', 'dir', 'ext', 'mime', 'size'), 'conditions' => array($this->Video->primaryKey => $id)))['Video'];
     
     
     $filename = $video['dir'].'/'.$video['file'];
     if (is_file($filename)) {
         header('Content-Type: '.$video['mime']);
+        header('Content-Length: '.$video['size']);
+        session_cache_limiter('nocache');
+        header('Expires: Thu, 19 Nov 1981 08:52:00 GMT');
         header("Content-Disposition: attachment; filename=".$video['file']);
-        $fd = fopen($filename, "r");
-        while(!feof($fd)) {
-            echo fread($fd, 1024 * 5);
-              $this->flush_buffers();
-            }
-        fclose ($fd);
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: no-cache');
+        
+        $fd = fopen($filename, "rb");
+        print(fread($fd, $video['size']));
+        $this->flush_buffers();
+        fclose($fd);
+        //~ while(!feof($fd)) {
+            //~ echo fread($fd, 1024 * 5000);
+              //~ $this->flush_buffers();
+            //~ }
+        //~ fclose ($fd);
         exit();
     }
   }

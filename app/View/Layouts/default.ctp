@@ -34,9 +34,9 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
 		echo $this->fetch('script');
-    echo $this->Html->script(array(
-                    '/jwplayer/jwplayer.js',
-                  ));
+    echo $this->Html->script('//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js');
+    echo $this->Html->script('videos.js');
+    echo $this->Html->script(array('/jwplayer/jwplayer.js',));
 	?>
 </head>
 <body>

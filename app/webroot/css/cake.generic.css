@@ -784,3 +784,65 @@ pre {
 .videoList .leftMenu .videoDirs li.current a {
   color: #3C81F0;
 }
+
+.oneVideo {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #7C7C7C;
+  padding-left: 10px;
+}
+
+.oneVideo .videoContent {
+  display: none;
+  float: left;
+  width: 99%;
+  padding-top: 5px;
+  border-top: 1px solid #ACACAC;
+}
+
+.oneVideo .VideoButons {
+  float: left;
+  display: block;
+  overflow: hidden;
+  width: 99%;
+}
+
+.oneVideo .VideoButons .showButton,
+.oneVideo .VideoButons .hideButton {
+  color: #0461BC;
+  cursor: pointer;
+  float: left;
+  display: block;
+  padding-right: 10px;
+  width: 50px;
+}
+
+.oneVideo .VideoButons .hideButton {
+  display: none;
+}
+
+.oneVideo .VideoButons .showButton:hover,
+.oneVideo .VideoButons .hideButton:hover {
+  text-decoration: underline;
+}
+
+.oneVideo .VideoButons .title {
+  float: left;
+  display: block;
+}
+
+.oneVideo .videoContent .writeVideo {
+  color: #0461BC;
+  cursor: pointer;
+  padding-right: 15px;
+  text-decoration: underline;
+}
+
+.oneVideo .videoContent .writeVideo:hover {
+  text-decoration: none;
+}
+
+.oneVideo .videoContent .playerContent {
+  padding: 5px 0 5px 0;
+}
