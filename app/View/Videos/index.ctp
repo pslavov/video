@@ -51,7 +51,7 @@
               <span class="writeVideo writeVLC" onClick="writeVLC(<?= $v['video_id']?>, '<?= $v['ext']?>')">VLC Plugin</span>
               <span class="writeVideo writeJW" onClick="writeJW(<?= $v['video_id']?>, '<?= $v['file']?>', '<?= $v['ext']?>')">JW player</span>
               <span class="writeVideo writeHTML5" onClick="writeHTML5(<?= $v['video_id']?>, '<?= $v['mime']?>', '<?= $v['ext']?>')" >HTML5</span>
-              <span class="writeVideo"><?= ($v['encoded'] ? 'E' : 'Not e' )?>ncoded</span>
+              <span class="writeVideo"><?= ($v['encoded'] ? 'E' : 'Not e' )?>ncoded </span>
               <div class="playerContent playerContent<?= $v['video_id']?>">
                 1
               </div>
