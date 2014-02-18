@@ -31,7 +31,7 @@ class Video extends AppModel {
     $ret = array();
     $existing_videos = $this->find('all', 
                           array(
-                            'fields' => array('file', 'dir', 'ext', 'mime', 'mtime', 'size', 'video_id'),
+                            'fields' => array('file', 'dir', 'ext', 'mime', 'mtime', 'size', 'video_id', 'encoded', 'pass_encode'),
                             'order' => 'mtime DESC',
                           )
                         );
