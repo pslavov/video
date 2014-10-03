@@ -6,18 +6,18 @@ This library contains the ActiveRecord migrations used for SumUp database change
 
 There are at least two ways to do that:
 
-1. Clone the code and run:
+### 1. Clone the code and run:
 
 ```
 bundle install
 ```
 
-2. Use the Jenkins job for that:
+### 2. Use the Jenkins job for that:
 
-[DBMigrate-RUBY-2.1] (https://jenkins.internal.sumup.com/job/DBMigrate-RUBY-2.1/)
+    [DBMigrate-RUBY-2.1] (https://jenkins.internal.sumup.com/job/DBMigrate-RUBY-2.1/)
     
-This job will make an rpm package for a selected branch,
-and then install it on the selected dev server and run the migrations.
+    This job will make an rpm package for a selected branch,
+    and then install it on the selected dev server and run the migrations.
 
 ## Usage
 
