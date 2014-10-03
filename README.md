@@ -9,7 +9,7 @@ There are at least two ways to do that:
 1. Clone the code and run:
 
 ```
-    bundle install
+bundle install
 ```
 
 2. Use the Jenkins job for that:
